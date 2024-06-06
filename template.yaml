@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-demo
+
+  Sample SAM Template for sam-demo
+
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+
+  SamDemoLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: layers/sam-demo-layer
+      CompatibleRuntimes:
+        - python3.10
+    Metadata:
+      BuildMethod: makefile
+      BuildArchitecture: x86_64
+
+  CleanPartiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/clean_parties/
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Architectures:
+        - x86_64
+
+  StagePartiesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/stage_parties/
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Architectures:
+        - x86_64
+      Layers:
+        - !Ref SamDemoLayer
+
+Outputs:
+  StagePartiesFunction:
+    Description: "Stage Parties Lambda Function ARN"
+    Value: !GetAtt StagePartiesFunction.Arn
+  StagePartiesFunctionIamRole:
+    Description: "Implicit IAM Role created for Stage Parties Lambda Function"
+    Value: !GetAtt StagePartiesFunctionRole.Arn
+  CleanPartiesFunction:
+    Description: "Clean Parties Lambda Function ARN"
+    Value: !GetAtt CleanPartiesFunction.Arn
+  CleanPartiesFunctionIamRole:
+    Description: "Implicit IAM Role created for Clean Parties Lambda Function"
+    Value: !GetAtt CleanPartiesFunctionRole.Arn
+
