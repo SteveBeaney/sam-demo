@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 build:
 	sam build
 
@@ -12,7 +14,15 @@ test:
 
 coverage:
 	.venv/bin/coverage run -m pytest
-	.venv/bin/coverage report
+	.venv/bin/coverage report -m
 
-lint:
-	.venv/bin/flake8 functions
+coverage_anotate:
+	.venv/bin/coverage run -m pytest
+	.venv/bin/coverage annotate
+
+coverage_clean:
+	find . -name "*,cover" -type f -delete
+
+flake8:
+	.venv/bin/flake8 ./functions
+
